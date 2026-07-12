@@ -119,6 +119,13 @@ const kenyanAirports = [
 ];
 
 const users = [
+  // System user for persisted alerts
+  {
+    email: 'system@aviation.com',
+    name: 'System User',
+    role: UserRole.ADMIN,
+    password: 'System123!'
+  },
   {
     email: 'admin@aviation.com',
     name: 'System Administrator',
@@ -229,6 +236,12 @@ async function main() {
         preferences: {},
       },
     });
+  }
+
+  // Ensure system user id is visible so it can be set as SYSTEM_USER_ID
+  const systemUser = await prisma.user.findUnique({ where: { email: 'system@aviation.com' } });
+  if (systemUser) {
+    console.log(`SYSTEM_USER_ID=${systemUser.id}`);
   }
 
   // Create thresholds

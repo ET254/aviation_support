@@ -806,13 +806,43 @@ private static requiresImmediateAction(
 
     ): Promise<void> {
 
-        // Future implementation:
-        //
-        // await prisma.alert.createMany(...)
-        //
-        // Alerts are intentionally kept in memory for now.
+        // Map AlertModel -> Prisma Alert
+        try {
+            const { prisma } = await import('../../utils/prisma');
 
-        void alerts;
+            // Resolve system user id from env or fallback to seeded SYSTEM_USER_ID
+            const systemUserId = process.env.SYSTEM_USER_ID;
+            if (!systemUserId) {
+                // Log a warning — schema requires userId
+                // We avoid creating users here to keep changes minimal.
+                console.warn('[AlertEngine] No SYSTEM_USER_ID set; alerts will not be persisted to DB. Set SYSTEM_USER_ID env var to enable persistence.');
+                return;
+            }
+
+            // Map to Prisma Alert model (lean storage)
+            const severityMap: Record<string, string> = {
+                EMERGENCY: 'CRITICAL',
+                WARNING: 'SEVERE',
+                WATCH: 'RESTRICTED',
+                ADVISORY: 'CAUTION',
+                INFORMATION: 'MONITOR'
+            };
+
+            const createMany = alerts.map(a => ({
+                id: a.id,
+                userId: systemUserId,
+                type: 'WEATHER',
+                message: a.message ?? a.summary ?? a.title,
+                severity: (severityMap[a.severity] ?? 'MONITOR'),
+                expiresAt: a.validTo ?? undefined
+            }));
+
+            // Use createMany for performance; skipDuplicates in case ids collide
+            await prisma.alert.createMany({ data: createMany as any, skipDuplicates: true });
+
+        } catch (err) {
+            console.error('[AlertEngine] persistAlerts error', err as any);
+        }
 
     }
 
@@ -835,11 +865,19 @@ private static requiresImmediateAction(
 
     ): Promise<void> {
 
-        // Future implementation:
-        //
-        // NotificationDispatcher.dispatch(alerts);
+        try {
+            const { NotificationDispatcher } = await import('./dispatch/notificationDispatcher');
 
-        void alerts;
+            // use dispatchMany for multiple alerts
+            if (NotificationDispatcher && typeof NotificationDispatcher.dispatchMany === 'function') {
+                await NotificationDispatcher.dispatchMany(alerts);
+            } else if (NotificationDispatcher && typeof NotificationDispatcher.dispatch === 'function') {
+                await NotificationDispatcher.dispatch(alerts as any);
+            }
+
+        } catch (err) {
+            console.error('[AlertEngine] dispatchAlerts error', err as any);
+        }
 
     }
 
