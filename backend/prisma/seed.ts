@@ -27,56 +27,18 @@ const kenyanAirports = [
     elevation: 5530,
     terrainType: TerrainType.HIGHLANDS,
     topographyDescription: 'Urban highland terrain with surrounding residential areas.',
-    runwayLength: 4900,
-    runwayOrientation: '07/25',
-    runwaySurface: 'Asphalt',
-    category: AirportCategory.DOMESTIC,
-  },
-  {
-    name: 'Moi International Airport',
-    code: 'HKMO',
-    wmoId: '63820',
-    latitude: -4.0348,
-    longitude: 39.5942,
-    elevation: 200,
-    terrainType: TerrainType.COASTAL,
-    topographyDescription: 'Coastal plain with tropical climate. Near Indian Ocean.',
-    runwayLength: 10950,
-    runwayOrientation: '03/21',
-    runwaySurface: 'Asphalt',
-    category: AirportCategory.INTERNATIONAL,
-  },
-  {
-    name: 'Kisumu International Airport',
-    code: 'HKKI',
-    wmoId: '63708',
-    latitude: -0.0916,
-    longitude: 34.7810,
-    elevation: 3795,
-    terrainType: TerrainType.LAKE_REGION,
-    topographyDescription: 'Lake Victoria basin with unique microclimate. Prone to thunderstorms.',
-    runwayLength: 10800,
-    runwayOrientation: '06/24',
-    runwaySurface: 'Asphalt',
-    category: AirportCategory.INTERNATIONAL,
-  },
-  {
-    name: 'Eldoret International Airport',
-    code: 'HKEL',
-    wmoId: '63720',
-    latitude: 0.4036,
-    longitude: 35.2382,
-    elevation: 7053,
-    terrainType: TerrainType.HIGHLANDS,
-    topographyDescription: 'High altitude plateau (7,053 ft). Rift Valley region.',
-    runwayLength: 11500,
-    runwayOrientation: '07/25',
-    runwaySurface: 'Asphalt',
-    category: AirportCategory.DOMESTIC,
-  },
-  {
-    name: 'Lodwar Airstrip',
-    code: 'HKLO',
+    const users = [
+      // Passwords may be provided via environment variables named as indicated below.
+      // If not provided, the seed will fall back to the default value listed.
+      { email: 'system@aviation.com', name: 'System User', role: UserRole.ADMIN, passwordEnv: 'SEED_PASSWORD_SYSTEM', defaultPassword: 'System123!' },
+      { email: 'admin@aviation.com', name: 'System Administrator', role: UserRole.ADMIN, passwordEnv: 'SEED_PASSWORD_ADMIN', defaultPassword: 'Admin123!' },
+      { email: 'met@aviation.com', name: 'John Met', role: UserRole.METEOROLOGIST, passwordEnv: 'SEED_PASSWORD_MET', defaultPassword: 'Met123!' },
+      { email: 'dispatch@aviation.com', name: 'Jane Dispatcher', role: UserRole.DISPATCHER, passwordEnv: 'SEED_PASSWORD_DISPATCH', defaultPassword: 'Dispatch123!' },
+      { email: 'pilot@aviation.com', name: 'Mike Pilot', role: UserRole.PILOT, passwordEnv: 'SEED_PASSWORD_PILOT', defaultPassword: 'Pilot123!' },
+      { email: 'atc@aviation.com', name: 'Sarah ATC', role: UserRole.ATC, passwordEnv: 'SEED_PASSWORD_ATC', defaultPassword: 'Atc123!' },
+      { email: 'ops@aviation.com', name: 'David Operations', role: UserRole.OPERATIONS, passwordEnv: 'SEED_PASSWORD_OPS', defaultPassword: 'Ops123!' },
+      { email: 'ground@aviation.com', name: 'Lisa Ground', role: UserRole.GROUND_HANDLER, passwordEnv: 'SEED_PASSWORD_GROUND', defaultPassword: 'Ground123!' },
+    ];
     wmoId: '63600',
     latitude: 3.1167,
     longitude: 35.6167,
@@ -223,7 +185,8 @@ async function main() {
   const jkia = await prisma.station.findUnique({ where: { code: 'HKJK' } });
   
   for (const userData of users) {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const rawPassword = process.env[userData.passwordEnv] || userData.defaultPassword;
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
     await prisma.user.upsert({
       where: { email: userData.email },
       update: {},
