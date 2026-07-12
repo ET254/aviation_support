@@ -1,0 +1,257 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  METEOROLOGIST
+  DISPATCHER
+  PILOT
+  ATC
+  OPERATIONS
+  GROUND_HANDLER
+}
+
+enum SeverityLevel {
+  NORMAL
+  MONITOR
+  CAUTION
+  RESTRICTED
+  SEVERE
+  CRITICAL
+}
+
+enum AlertType {
+  WEATHER
+  OPERATIONAL
+  SAFETY
+  SYSTEM
+  MAINTENANCE
+}
+
+enum PrecipitationType {
+  NONE
+  RAIN
+  SNOW
+  SLEET
+  HAIL
+  FREEZING_RAIN
+}
+
+enum CloudType {
+  CLEAR
+  FEW
+  SCATTERED
+  BROKEN
+  OVERCAST
+  VERTICAL_DEVELOPMENT
+}
+
+enum AirportCategory {
+  INTERNATIONAL
+  DOMESTIC
+  AERODROME
+  AIRSTRIP
+}
+
+enum TerrainType {
+  HIGHLANDS
+  COASTAL
+  LAKE_REGION
+  SEMI_ARID
+  VALLEY_MOUNTAIN
+  PLAINS
+  DESERT
+}
+
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  password    String
+  name        String
+  role        UserRole
+  stationId   String?
+  station     Station?  @relation(fields: [stationId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  lastLogin   DateTime?
+  isActive    Boolean   @default(true)
+  preferences Json?     @default("{}")
+
+  impactLogs ImpactLog[]
+  alerts     Alert[]
+  auditLogs  AuditLog[] // Fixed: Added relation field
+
+  @@index([stationId])
+  @@index([role])
+  @@index([email])
+}
+
+model Station {
+  id                    String          @id @default(cuid())
+  name                  String
+  code                  String          @unique
+  wmoId                 String?         @unique
+  latitude              Float
+  longitude             Float
+  elevation             Float // In feet
+  terrainType           TerrainType
+  topographyDescription String
+  runwayLength          Float? // In feet
+  runwayOrientation     String?
+  runwaySurface         String?
+  category              AirportCategory
+  isActive              Boolean         @default(false)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  users        User[]
+  weatherData  WeatherData[]
+  forecastData ForecastData[]
+  thresholds   Threshold[]
+  impactLogs   ImpactLog[]
+
+  @@index([code])
+  @@index([wmoId])
+  @@index([isActive])
+}
+
+model WeatherData {
+  id                     String             @id @default(cuid())
+  stationId              String
+  station                Station            @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  timestamp              DateTime
+  temperature            Float? // In Celsius
+  windDirection          Float? // In degrees
+  windSpeed              Float? // In knots
+  gustSpeed              Float? // In knots
+  visibility             Float? // In meters
+  rvr                    Float? // Runway Visual Range in meters
+  pressureQnh            Float? // In hPa
+  pressureQfe            Float? // In hPa
+  humidity               Float? // Percentage
+  dewPoint               Float? // In Celsius
+  cloudAmount            Float? // Oktas (0-8)
+  cloudBase              Float? // In feet
+  cloudType              CloudType?
+  precipitationType      PrecipitationType?
+  precipitationIntensity Float?
+  densityAltitude        Float? // In feet
+  crosswindComponent     Float? // In knots
+  headwindComponent      Float? // In knots
+  tailwindComponent      Float? // In knots
+  createdAt              DateTime           @default(now())
+
+  @@index([stationId])
+  @@index([timestamp])
+  @@index([stationId, timestamp])
+}
+
+model ForecastData {
+  id                 String   @id @default(cuid())
+  stationId          String
+  station            Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  validFrom          DateTime
+  validTo            DateTime
+  taf                String? // Terminal Aerodrome Forecast
+  sigmetData         Json? // SIGMET warnings
+  upperWind          Json? // Upper air wind data
+  upperTemp          Json? // Upper air temperature
+  freezingLevel      Float? // In feet
+  turbulenceForecast String?
+  icingForecast      String?
+  source             String   @default("MANUAL") // MANUAL, CSV, NETCDF, API
+  fileReference      String? // Reference to imported file
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([stationId])
+  @@index([validFrom, validTo])
+  @@index([stationId, validFrom])
+}
+
+model Threshold {
+  id             String        @id @default(cuid())
+  stationId      String
+  station        Station       @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  parameter      String // visibility, wind_speed, ceiling, temperature, etc.
+  minValue       Float?
+  maxValue       Float?
+  severityLevel  SeverityLevel
+  actionRequired String
+  userRole       UserRole?
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@unique([stationId, parameter, userRole])
+  @@index([stationId])
+  @@index([stationId, parameter])
+  @@index([isActive])
+}
+
+model ImpactLog {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stationId   String
+  station     Station       @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  timestamp   DateTime      @default(now())
+  eventType   String // WEATHER, OPERATIONAL, SAFETY, etc.
+  severity    SeverityLevel
+  description String
+  actionTaken String?
+  isResolved  Boolean       @default(false)
+  resolvedAt  DateTime?
+  metadata    Json?         @default("{}")
+
+  @@index([userId])
+  @@index([stationId])
+  @@index([timestamp])
+  @@index([severity])
+  @@index([stationId, timestamp])
+}
+
+model Alert {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timestamp      DateTime      @default(now())
+  type           AlertType
+  message        String
+  readStatus     Boolean       @default(false)
+  acknowledgedAt DateTime?
+  actionUrl      String?
+  severity       SeverityLevel
+  expiresAt      DateTime?
+  createdAt      DateTime      @default(now())
+
+  @@index([userId])
+  @@index([readStatus])
+  @@index([timestamp])
+  @@index([userId, readStatus])
+  @@index([severity])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  entity    String
+  entityId  String
+  changes   Json?
+  ipAddress String?
+  userAgent String?
+  timestamp DateTime @default(now())
+
+  @@index([userId])
+  @@index([timestamp])
+  @@index([entity, entityId])
+  @@index([timestamp, userId])
+}

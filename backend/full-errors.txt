@@ -1,0 +1,58 @@
+src/controllers/auth.controller.ts(100,31): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: SignOptions & { algorithm: "none"; }): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/controllers/auth.controller.ts(111,32): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: SignOptions & { algorithm: "none"; }): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/controllers/auth.controller.ts(172,34): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: SignOptions & { algorithm: "none"; }): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/controllers/auth.controller.ts(224,49): error TS2345: Argument of type '{ where: { id: any; }; include: { station: true; }; select: { id: true; email: true; name: true; role: true; stationId: true; station: true; preferences: true; lastLogin: true; createdAt: true; }; }' is not assignable to parameter of type 'SelectSubset<{ where: { id: any; }; include: { station: true; }; select: { id: true; email: true; name: true; role: true; stationId: true; station: true; preferences: true; lastLogin: true; createdAt: true; }; }, UserFindUniqueArgs<DefaultArgs>>'.
+  Type '{ where: { id: any; }; include: { station: true; }; select: { id: true; email: true; name: true; role: true; stationId: true; station: true; preferences: true; lastLogin: true; createdAt: true; }; }' is not assignable to type '"Please either choose `select` or `include`."'.
+src/controllers/impact.controller.ts(52,11): error TS2322: Type 'ImpactAssessment' is not assignable to type 'NullableJsonNullValueInput | InputJsonValue'.
+  Type 'ImpactAssessment' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'ImpactAssessment'.
+src/controllers/station.controller.ts(25,9): error TS2322: Type '{ name?: string; code?: string; wmoId?: string; latitude?: number; longitude?: number; elevation?: number; terrainType?: "HIGHLANDS" | "COASTAL" | "LAKE_REGION" | "SEMI_ARID" | "VALLEY_MOUNTAIN" | "PLAINS" | "DESERT"; ... 4 more ...; category?: "INTERNATIONAL" | ... 2 more ... | "AIRSTRIP"; }' is not assignable to type '(Without<StationCreateInput, StationUncheckedCreateInput> & StationUncheckedCreateInput) | (Without<...> & StationCreateInput)'.
+  Type '{ name?: string; code?: string; wmoId?: string; latitude?: number; longitude?: number; elevation?: number; terrainType?: "HIGHLANDS" | "COASTAL" | "LAKE_REGION" | "SEMI_ARID" | "VALLEY_MOUNTAIN" | "PLAINS" | "DESERT"; ... 4 more ...; category?: "INTERNATIONAL" | ... 2 more ... | "AIRSTRIP"; }' is not assignable to type 'Without<StationUncheckedCreateInput, StationCreateInput> & StationCreateInput'.
+    Type '{ name?: string; code?: string; wmoId?: string; latitude?: number; longitude?: number; elevation?: number; terrainType?: "HIGHLANDS" | "COASTAL" | "LAKE_REGION" | "SEMI_ARID" | "VALLEY_MOUNTAIN" | "PLAINS" | "DESERT"; ... 4 more ...; category?: "INTERNATIONAL" | ... 2 more ... | "AIRSTRIP"; }' is not assignable to type 'StationCreateInput'.
+      Property 'name' is optional in type '{ name?: string; code?: string; wmoId?: string; latitude?: number; longitude?: number; elevation?: number; terrainType?: "HIGHLANDS" | "COASTAL" | "LAKE_REGION" | "SEMI_ARID" | "VALLEY_MOUNTAIN" | "PLAINS" | "DESERT"; ... 4 more ...; category?: "INTERNATIONAL" | ... 2 more ... | "AIRSTRIP"; }' but required in type 'StationCreateInput'.
+src/controllers/threshold.controller.ts(29,9): error TS2322: Type '{ stationId?: string; parameter?: string; minValue?: number; maxValue?: number; severityLevel?: "NORMAL" | "MONITOR" | "CAUTION" | "RESTRICTED" | "SEVERE" | "CRITICAL"; actionRequired?: string; userRole?: "ADMIN" | ... 5 more ... | "GROUND_HANDLER"; isActive?: boolean; }' is not assignable to type '(Without<ThresholdCreateInput, ThresholdUncheckedCreateInput> & ThresholdUncheckedCreateInput) | (Without<...> & ThresholdCreateInput)'.
+  Type '{ stationId?: string; parameter?: string; minValue?: number; maxValue?: number; severityLevel?: "NORMAL" | "MONITOR" | "CAUTION" | "RESTRICTED" | "SEVERE" | "CRITICAL"; actionRequired?: string; userRole?: "ADMIN" | ... 5 more ... | "GROUND_HANDLER"; isActive?: boolean; }' is not assignable to type 'Without<ThresholdUncheckedCreateInput, ThresholdCreateInput> & ThresholdCreateInput'.
+    Type '{ stationId?: string; parameter?: string; minValue?: number; maxValue?: number; severityLevel?: "NORMAL" | "MONITOR" | "CAUTION" | "RESTRICTED" | "SEVERE" | "CRITICAL"; actionRequired?: string; userRole?: "ADMIN" | ... 5 more ... | "GROUND_HANDLER"; isActive?: boolean; }' is not assignable to type 'Without<ThresholdUncheckedCreateInput, ThresholdCreateInput>'.
+      Types of property 'stationId' are incompatible.
+        Type 'string' is not assignable to type 'never'.
+src/controllers/threshold.controller.ts(234,13): error TS2322: Type '{ stationId: string; parameter: string; minValue: number; maxValue: number; severityLevel: string; actionRequired: string; }' is not assignable to type '(Without<ThresholdCreateInput, ThresholdUncheckedCreateInput> & ThresholdUncheckedCreateInput) | (Without<...> & ThresholdCreateInput)'.
+  Type '{ stationId: string; parameter: string; minValue: number; maxValue: number; severityLevel: string; actionRequired: string; }' is not assignable to type 'Without<ThresholdUncheckedCreateInput, ThresholdCreateInput> & ThresholdCreateInput'.
+    Type '{ stationId: string; parameter: string; minValue: number; maxValue: number; severityLevel: string; actionRequired: string; }' is not assignable to type 'Without<ThresholdUncheckedCreateInput, ThresholdCreateInput>'.
+      Types of property 'stationId' are incompatible.
+        Type 'string' is not assignable to type 'never'.
+src/controllers/weather.controller.ts(7,23): error TS2307: Cannot find module 'csv-parse' or its corresponding type declarations.
+src/services/report.service.ts(3,19): error TS2307: Cannot find module 'jspdf' or its corresponding type declarations.
+src/services/report.service.ts(515,12): error TS2352: Conversion of type 'Buffer' to type 'Buffer<ArrayBufferLike>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'Buffer' is missing the following properties from type 'Buffer<ArrayBufferLike>': subarray, write, toJSON, equals, and 94 more.
+src/utils/prisma.ts(16,14): error TS2345: Argument of type '"query"' is not assignable to parameter of type 'never'.
+src/utils/prisma.ts(17,30): error TS2339: Property 'query' does not exist on type 'never'.
+src/utils/prisma.ts(18,31): error TS2339: Property 'params' does not exist on type 'never'.
+src/utils/prisma.ts(19,33): error TS2339: Property 'duration' does not exist on type 'never'.
+src/utils/seed-data.ts(91,11): error TS2322: Type '{ stationId: string; parameter: string; minValue: number; maxValue: number; severityLevel: string; actionRequired: string; userRole: string; }' is not assignable to type '(Without<ThresholdCreateInput, ThresholdUncheckedCreateInput> & ThresholdUncheckedCreateInput) | (Without<...> & ThresholdCreateInput)'.
+  Type '{ stationId: string; parameter: string; minValue: number; maxValue: number; severityLevel: string; actionRequired: string; userRole: string; }' is not assignable to type 'Without<ThresholdUncheckedCreateInput, ThresholdCreateInput> & ThresholdCreateInput'.
+    Type '{ stationId: string; parameter: string; minValue: number; maxValue: number; severityLevel: string; actionRequired: string; userRole: string; }' is not assignable to type 'Without<ThresholdUncheckedCreateInput, ThresholdCreateInput>'.
+      Types of property 'stationId' are incompatible.
+        Type 'string' is not assignable to type 'never'.
+src/utils/seed-data.ts(101,11): error TS2322: Type '{ stationId: string; timestamp: Date; temperature: number; windDirection: number; windSpeed: number; gustSpeed: number; visibility: number; rvr: number; pressureQnh: number; pressureQfe: number; ... 6 more ...; precipitationIntensity: number; }' is not assignable to type '(Without<WeatherDataCreateInput, WeatherDataUncheckedCreateInput> & WeatherDataUncheckedCreateInput) | (Without<...> & WeatherDataCreateInput)'.
+  Type '{ stationId: string; timestamp: Date; temperature: number; windDirection: number; windSpeed: number; gustSpeed: number; visibility: number; rvr: number; pressureQnh: number; pressureQfe: number; ... 6 more ...; precipitationIntensity: number; }' is not assignable to type 'Without<WeatherDataUncheckedCreateInput, WeatherDataCreateInput> & WeatherDataCreateInput'.
+    Type '{ stationId: string; timestamp: Date; temperature: number; windDirection: number; windSpeed: number; gustSpeed: number; visibility: number; rvr: number; pressureQnh: number; pressureQfe: number; ... 6 more ...; precipitationIntensity: number; }' is not assignable to type 'Without<WeatherDataUncheckedCreateInput, WeatherDataCreateInput>'.
+      Types of property 'stationId' are incompatible.
+        Type 'string' is not assignable to type 'never'.

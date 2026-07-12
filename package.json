@@ -1,0 +1,22 @@
+{
+  "name": "aviation-impact-dashboard",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "docker-compose up",
+    "dev:build": "docker-compose up --build",
+    "stop": "docker-compose down",
+    "migrate": "docker-compose exec backend npx prisma migrate dev",
+    "seed": "docker-compose exec backend npx prisma db seed",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm run dev",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  }
+}

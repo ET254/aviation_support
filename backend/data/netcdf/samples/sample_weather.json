@@ -1,0 +1,12 @@
+{
+  "station": "HKJK",
+  "temperature": 24.2,
+  "windSpeed": 15,
+  "windDirection": 230,
+  "visibility": 9000,
+  "pressure": 1013,
+  "humidity": 72,
+  "cloudBase": 1400,
+  "cloudAmount": 5,
+  "precipitation": 0
+}

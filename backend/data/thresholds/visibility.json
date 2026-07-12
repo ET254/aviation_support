@@ -1,0 +1,7 @@
+{
+  "excellent": 10000,
+  "good": 5000,
+  "moderate": 3000,
+  "poor": 1500,
+  "critical": 800
+}

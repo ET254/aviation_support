@@ -1,0 +1,27 @@
+[
+  {
+    "minimum": 10000,
+    "status": "NORMAL",
+    "message": "Normal visual operations."
+  },
+  {
+    "minimum": 5000,
+    "status": "CAUTION",
+    "message": "Monitor visibility."
+  },
+  {
+    "minimum": 3000,
+    "status": "WARNING",
+    "message": "IFR traffic increasing."
+  },
+  {
+    "minimum": 800,
+    "status": "CRITICAL",
+    "message": "Low Visibility Procedures."
+  },
+  {
+    "minimum": 0,
+    "status": "EMERGENCY",
+    "message": "Runway closure likely."
+  }
+]
