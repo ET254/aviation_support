@@ -32,19 +32,20 @@ export const DashboardPage: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    fetchActiveStation();
-  }, []);
-
-  useEffect(() => {
-    if (activeStation) {
+    if (activeStation?.id) {
       fetchDashboardData();
+      return;
     }
-  }, [activeStation]);
+
+    fetchActiveStation();
+  }, [activeStation?.id]);
 
   const fetchActiveStation = async () => {
     try {
       const response = await api.getActiveStation();
-      setActiveStation(response.data.data);
+      if (response.data?.data) {
+        setActiveStation(response.data.data);
+      }
     } catch (error) {
       console.error('Failed to fetch active station:', error);
       toast.error('Failed to load active station.');

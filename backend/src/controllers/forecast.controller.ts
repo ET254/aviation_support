@@ -6,6 +6,44 @@ import { ForecastService } from '../services/forecast.service';
 import { NetCDFParser } from '../utils/netcdf-parser';
 
 export class ForecastController {
+  private static async createForecastRecords(stationId: string, forecastData: any[], fileReference?: string) {
+    const created: any[] = [];
+
+    for (const data of forecastData) {
+      const forecast = await prisma.forecastData.create({
+        data: {
+          stationId,
+          validFrom: data.validFrom,
+          validTo: data.validTo,
+          taf: data.taf,
+          sigmetData: data.sigmetData,
+          upperWind: data.upperWind,
+          upperTemp: data.upperTemp,
+          freezingLevel: data.freezingLevel,
+          turbulenceForecast: data.turbulenceForecast,
+          icingForecast: data.icingForecast,
+          source: 'NETCDF',
+          fileReference,
+        },
+      });
+      created.push(forecast);
+    }
+
+    return created;
+  }
+
+  private static async ensureForecastsForStation(stationId: string, sourcePath?: string) {
+    const existingForecastCount = await prisma.forecastData.count({ where: { stationId } });
+
+    if (existingForecastCount > 0) {
+      return [];
+    }
+
+    const forecastData = await NetCDFParser.parseFile(sourcePath || NetCDFParser.getDefaultFilePath());
+    const fileReference = sourcePath ? sourcePath.split(/[\\/]/).pop() : 'wrfout_d01_nc.nc';
+
+    return this.createForecastRecords(stationId, forecastData, fileReference);
+  }
   /**
    * Create forecast
    */
@@ -54,6 +92,8 @@ export class ForecastController {
       const { stationId } = req.params;
       const now = new Date();
 
+      await ForecastController.ensureForecastsForStation(stationId);
+
       const forecast = await prisma.forecastData.findFirst({
         where: {
           stationId,
@@ -86,6 +126,8 @@ export class ForecastController {
   static async getTAF(req: Request, res: Response) {
     try {
       const { stationId } = req.params;
+
+      await ForecastController.ensureForecastsForStation(stationId);
 
       const forecast = await prisma.forecastData.findFirst({
         where: {
@@ -128,6 +170,8 @@ export class ForecastController {
     try {
       const { stationId } = req.params;
       const now = new Date();
+
+      await ForecastController.ensureForecastsForStation(stationId);
 
       // Get forecasts first without JSON filtering
       const forecasts = await prisma.forecastData.findMany({
@@ -175,10 +219,6 @@ export class ForecastController {
       const { stationId } = req.body;
       const file = req.file;
 
-      if (!file) {
-        throw new AppError('No file uploaded', 400);
-      }
-
       if (!stationId) {
         throw new AppError('Station ID required', 400);
       }
@@ -192,30 +232,13 @@ export class ForecastController {
         throw new AppError('Station not found', 404);
       }
 
-      // Parse NetCDF file
-      const forecastData = await NetCDFParser.parseFile(file.path);
-
-      // Create forecast records
-      const created = [];
-      for (const data of forecastData) {
-        const forecast = await prisma.forecastData.create({
-          data: {
-            stationId,
-            validFrom: data.validFrom,
-            validTo: data.validTo,
-            taf: data.taf,
-            sigmetData: data.sigmetData,
-            upperWind: data.upperWind,
-            upperTemp: data.upperTemp,
-            freezingLevel: data.freezingLevel,
-            turbulenceForecast: data.turbulenceForecast,
-            icingForecast: data.icingForecast,
-            source: 'NETCDF',
-            fileReference: file.filename,
-          },
-        });
-        created.push(forecast);
-      }
+      const sourcePath = file?.path || NetCDFParser.getDefaultFilePath();
+      const forecastData = await NetCDFParser.parseFile(sourcePath);
+      const created = await ForecastController.createForecastRecords(
+        stationId,
+        forecastData,
+        file?.filename || 'wrfout_d01_nc.nc'
+      );
 
       logger.info(`Imported ${created.length} forecasts from NetCDF for station ${station.code}`);
 
@@ -238,6 +261,8 @@ export class ForecastController {
     try {
       const { stationId } = req.params;
       const { level } = req.query;
+
+      await ForecastController.ensureForecastsForStation(stationId);
 
       const forecast = await prisma.forecastData.findFirst({
         where: {
@@ -287,6 +312,8 @@ export class ForecastController {
     try {
       const { stationId } = req.params;
       const { hours = 24 } = req.query;
+
+      await ForecastController.ensureForecastsForStation(stationId);
 
       const now = new Date();
       const endTime = new Date(now.getTime() + parseInt(hours as string, 10) * 3600000);

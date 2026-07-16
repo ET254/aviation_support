@@ -1,5 +1,6 @@
-import { prisma } from '../utils/prisma';
-import { logger } from '../utils/logger';
+import { NetCDFAdapter } from "../adapters/NetCDFAdapter";
+import { Forecast } from "../models/forecast";
+import { logger } from "../utils/logger";
 
 export class ForecastService {
   /**
@@ -137,34 +138,61 @@ export class ForecastService {
   }
 
   /**
-   * Process NetCDF data
-   */
-  static async processNetCDFData(filePath: string): Promise<any[]> {
-    // This would use the netcdf4 library to parse NetCDF files
-    // For now, returning sample structure
-    const forecasts = [];
-    
-    // Sample forecast generation
-    const now = new Date();
-    for (let i = 0; i < 8; i++) {
-      const validFrom = new Date(now.getTime() + i * 3 * 3600000);
-      const validTo = new Date(validFrom.getTime() + 3 * 3600000);
-      
-      forecasts.push({
-        validFrom,
-        validTo,
-        taf: this.generateSampleTAF(validFrom),
-        sigmetData: this.generateSampleSIGMET(validFrom),
-        upperWind: this.generateSampleUpperWind(validFrom),
-        upperTemp: this.generateSampleUpperTemp(validFrom),
-        freezingLevel: 10000 + Math.random() * 5000,
-        turbulenceForecast: ['LIGHT', 'MODERATE', 'SEVERE'][Math.floor(Math.random() * 3)],
-        icingForecast: ['NONE', 'LIGHT', 'MODERATE'][Math.floor(Math.random() * 3)],
-      });
-    }
+ * ============================================================================
+ * Load Forecast Timeline
+ * ============================================================================
+ */
 
-    return forecasts;
-  }
+static async loadForecastTimeline(
+    stationCode: string
+): Promise<Forecast[]> {
+
+    logger.info(`Loading forecast for ${stationCode}`);
+
+    return await NetCDFAdapter.timeline(
+        stationCode
+    );
+
+}
+/**
+ * ============================================================================
+ * Latest Forecast
+ * ============================================================================
+ */
+
+static async latestForecast(
+    stationCode: string
+): Promise<Forecast | null> {
+
+    return await NetCDFAdapter.latestForecast(
+        stationCode
+    );
+
+}
+
+/**
+ * ============================================================================
+ * Forecast Hour
+ * ============================================================================
+ */
+
+static async forecastHour(
+
+    stationCode: string,
+
+    hour: number
+
+): Promise<Forecast | null> {
+
+    return await NetCDFAdapter.forecastHour(
+
+        stationCode,
+
+        hour
+
+    );
+
+}
 
   /**
    * Generate sample TAF for testing

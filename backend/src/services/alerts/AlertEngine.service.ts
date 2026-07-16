@@ -808,7 +808,7 @@ private static requiresImmediateAction(
 
         // Map AlertModel -> Prisma Alert
         try {
-            const { prisma } = await import('../../utils/prisma');
+            const { prisma } = await import('../../utils/prisma.js');
 
             // Resolve system user id from env or fallback to seeded SYSTEM_USER_ID
             const systemUserId = process.env.SYSTEM_USER_ID;
@@ -866,7 +866,7 @@ private static requiresImmediateAction(
     ): Promise<void> {
 
         try {
-            const { NotificationDispatcher } = await import('./dispatch/notificationDispatcher');
+            const { NotificationDispatcher } = await import('./dispatch/notificationDispatcher.js');
 
             // use dispatchMany for multiple alerts
             if (NotificationDispatcher && typeof NotificationDispatcher.dispatchMany === 'function') {
