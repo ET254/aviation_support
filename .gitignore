@@ -1,3 +1,6 @@
 *.zip
 *.rar
 *.7z
+*.nc
+*.zip
+backend/data/
