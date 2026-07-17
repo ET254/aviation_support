@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Search, Plane } from "lucide-react";
 import { api } from "@/services/api";
 import { useStationStore } from "@/stores/stationStore";
+import { useAuth } from '@/contexts/AuthContext';
 import type { Station } from "@/types";
 
 export const StationsPage = () => {
   const navigate = useNavigate();
 
   const { setActiveStation } = useStationStore();
+  const { isAuthenticated } = useAuth();
 
   const [stations, setStations] = useState<Station[]>([]);
   const [search, setSearch] = useState("");
@@ -40,7 +42,11 @@ export const StationsPage = () => {
   const chooseStation = (station: Station) => {
     setActiveStation(station);
 
-    navigate("/login");
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
   };
 
   return (

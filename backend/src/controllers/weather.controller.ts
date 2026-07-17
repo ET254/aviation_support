@@ -376,9 +376,6 @@ static async getLatestAllStations(req: Request, res: Response) {
   try {
 
     const stations = await prisma.station.findMany({
-      where: {
-        isActive: true,
-      },
       include: {
         weatherData: {
           orderBy: {

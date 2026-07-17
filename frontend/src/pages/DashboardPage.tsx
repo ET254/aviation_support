@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useStationStore } from '@/stores/stationStore';
 import { useWeatherStore } from '@/stores/weatherStore';
 import { useAlertStore } from '@/stores/alertStore';
+import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 
 import { WeatherWidget } from '@/components/dashboard/WeatherWidget';
@@ -17,6 +18,7 @@ import toast from 'react-hot-toast';
 
 export const DashboardPage: React.FC = () => {
   const { activeStation, setActiveStation } = useStationStore();
+  const { user } = useAuth();
 
   const {
     setCurrentWeather,
@@ -32,8 +34,10 @@ export const DashboardPage: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    fetchActiveStation();
-  }, []);
+    if (!activeStation && user?.stationId && user.role !== 'ADMIN') {
+      fetchUserStation();
+    }
+  }, [activeStation, user?.stationId, user?.role]);
 
   useEffect(() => {
     if (activeStation) {
@@ -41,13 +45,15 @@ export const DashboardPage: React.FC = () => {
     }
   }, [activeStation]);
 
-  const fetchActiveStation = async () => {
+  const fetchUserStation = async () => {
+    if (!user?.stationId) return;
+
     try {
-      const response = await api.getActiveStation();
+      const response = await api.getStation(user.stationId);
       setActiveStation(response.data.data);
     } catch (error) {
-      console.error('Failed to fetch active station:', error);
-      toast.error('Failed to load active station.');
+      console.error('Failed to load assigned station:', error);
+      toast.error('Failed to load assigned station.');
     }
   };
 
@@ -112,6 +118,19 @@ export const DashboardPage: React.FC = () => {
       setIsRefreshing(false);
     }
   };
+
+  if (!activeStation) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="rounded-xl border bg-card p-8 text-center">
+          <h2 className="text-2xl font-semibold">No station selected</h2>
+          <p className="mt-2 text-muted-foreground">
+            Please select a station on the Stations page or ensure your user account is linked to a station.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

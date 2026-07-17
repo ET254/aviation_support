@@ -1,0 +1,1 @@
+{"version":3,"file":"flightCategory.mapper.d.ts","sourceRoot":"","sources":["../../../../src/services/weather/mappers/flightCategory.mapper.ts"],"names":[],"mappings":"AAAA,OAAO,EACH,2BAA2B,EAE9B,MAAM,qDAAqD,CAAC;AAE7D,qBAAa,oBAAoB;IAQ7B,MAAM,CAAC,GAAG,CACN,WAAW,EAAE,2BAA2B,GACzC,IAAI;IAyBP,OAAO,CAAC,MAAM,CAAC,iBAAiB;IA+DhC,OAAO,CAAC,MAAM,CAAC,gBAAgB;CAqFlC"}

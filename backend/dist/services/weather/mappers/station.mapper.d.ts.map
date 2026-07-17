@@ -1,0 +1,1 @@
+{"version":3,"file":"station.mapper.d.ts","sourceRoot":"","sources":["../../../../src/services/weather/mappers/station.mapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAe,MAAM,gBAAgB,CAAC;AACtD,OAAO,EAAE,2BAA2B,EAAE,MAAM,qDAAqD,CAAC;AAElG,qBAAa,aAAa;IAOtB,MAAM,CAAC,GAAG,CACN,OAAO,EAAE,OAAO,GACjB,OAAO,CAAC,2BAA2B,CAAC;CAiC1C"}

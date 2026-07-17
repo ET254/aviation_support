@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, TerrainType, AirportCategory } from '@prisma/client';
+import { PrismaClient, UserRole, TerrainType, AirportCategory, SeverityLevel, CloudType, PrecipitationType } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -10,25 +10,25 @@ export const additionalThresholds = [
     parameter: 'visibility',
     minValue: 1500,
     maxValue: 3000,
-    severityLevel: 'RESTRICTED',
+    severityLevel: SeverityLevel.RESTRICTED,
     actionRequired: 'Low visibility procedures for all aircraft',
-    userRole: 'ATC',
+    userRole: UserRole.ATC,
   },
   {
     parameter: 'crosswind',
     minValue: 15,
     maxValue: 20,
-    severityLevel: 'CAUTION',
+    severityLevel: SeverityLevel.CAUTION,
     actionRequired: 'Exercise caution on approach, monitor crosswind limits',
-    userRole: 'PILOT',
+    userRole: UserRole.PILOT,
   },
   {
     parameter: 'temperature',
     minValue: 30,
     maxValue: 35,
-    severityLevel: 'MONITOR',
+    severityLevel: SeverityLevel.MONITOR,
     actionRequired: 'Monitor engine performance and density altitude',
-    userRole: 'DISPATCHER',
+    userRole: UserRole.DISPATCHER,
   },
 ];
 
@@ -47,8 +47,8 @@ export const sampleWeatherData = [
     dewPoint: 15.5,
     cloudAmount: 4,
     cloudBase: 2500,
-    cloudType: 'SCATTERED',
-    precipitationType: 'NONE',
+    cloudType: CloudType.SCATTERED,
+    precipitationType: PrecipitationType.NONE,
     precipitationIntensity: 0,
   },
   {
@@ -64,8 +64,8 @@ export const sampleWeatherData = [
     dewPoint: 15.0,
     cloudAmount: 6,
     cloudBase: 800,
-    cloudType: 'BROKEN',
-    precipitationType: 'RAIN',
+    cloudType: CloudType.BROKEN,
+    precipitationType: PrecipitationType.RAIN,
     precipitationIntensity: 2.5,
   },
 ];

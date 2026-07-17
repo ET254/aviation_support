@@ -85,29 +85,21 @@ export const MapsPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await api.getStations();
-
+      const response = await api.getLatestWeatherAllStations();
       const stations = response.data?.data || [];
 
-      const mapped: AirportMarker[] = stations.map(
-        (station: any) => ({
-          id: station.id,
-          code: station.code,
-          name: station.name,
-
-          latitude: station.latitude ?? 0,
-          longitude: station.longitude ?? 0,
-          elevation: station.elevation ?? 0,
-
-          visibility: Math.floor(Math.random() * 10) + 2,
-          windSpeed: Math.floor(Math.random() * 30),
-          temperature: Math.floor(Math.random() * 15) + 15,
-
-          status: ['NORMAL', 'CAUTION', 'WARNING', 'CRITICAL'][
-            Math.floor(Math.random() * 4)
-          ] as AirportMarker['status'],
-        })
-      );
+      const mapped: AirportMarker[] = stations.map((station: any) => ({
+        id: station.id,
+        code: station.code,
+        name: station.name,
+        latitude: station.latitude ?? 0,
+        longitude: station.longitude ?? 0,
+        elevation: station.elevation ?? 0,
+        visibility: station.weather?.visibility ?? 0,
+        windSpeed: station.weather?.windSpeed ?? 0,
+        temperature: station.weather?.temperature ?? 0,
+        status: station.weather ? 'NORMAL' : 'CAUTION',
+      }));
 
       setAirports(mapped);
     } catch (error) {

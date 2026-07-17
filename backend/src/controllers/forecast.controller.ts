@@ -192,8 +192,12 @@ export class ForecastController {
         throw new AppError('Station not found', 404);
       }
 
-      // Parse NetCDF file
-      const forecastData = await NetCDFParser.parseFile(file.path);
+      // Parse NetCDF file for the selected station location
+      const forecastData = await NetCDFParser.parseFile(
+        file.path,
+        station.latitude,
+        station.longitude
+      );
 
       // Create forecast records
       const created = [];

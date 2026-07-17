@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthTokens } from '@/types';
 import toast from 'react-hot-toast';
 import { api } from '@/services/api';
+import { useStationStore } from '@/stores/stationStore';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -21,6 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [tokens, setTokens] = useState<AuthTokens | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { activeStation, setActiveStation } = useStationStore();
 
   useEffect(() => {
     // Check for stored tokens on mount
@@ -82,6 +84,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(data.data);
           // Also store user in localStorage
           localStorage.setItem('user', JSON.stringify(data.data));
+
+          if (data.data.stationId && data.data.stationId !== activeStation?.id) {
+            try {
+              const stationResponse = await api.getStation(data.data.stationId);
+              setActiveStation(stationResponse.data.data);
+            } catch (stationError) {
+              console.error('Failed to load assigned station:', stationError);
+            }
+          }
         } else {
           throw new Error('Failed to fetch user');
         }
@@ -133,6 +144,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('accessToken', tokensData.accessToken);
         localStorage.setItem('refreshToken', tokensData.refreshToken);
         localStorage.setItem('user', JSON.stringify(userData));
+
+        if (userData.stationId) {
+          try {
+            const stationResponse = await api.getStation(userData.stationId);
+            setActiveStation(stationResponse.data.data);
+          } catch (stationError) {
+            console.error('Failed to load user station:', stationError);
+          }
+        }
 
         toast.success(`Welcome back, ${userData.name}!`);
       } else {
