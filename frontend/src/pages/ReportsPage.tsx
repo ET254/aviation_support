@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Download, FileText, Loader2, Calendar, FileSpreadsheet, File } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { VoiceGuideButton } from '@/components/ui/VoiceGuideButton';
 interface ReportTemplate {
   id: string;
   name: string;
@@ -153,6 +154,18 @@ const generateReport = async () => {
     }
   };
 
+  const buildReportsNarration = () => {
+    const stationName = activeStation?.name || 'the selected station';
+    const reportLabel = reportType === 'weather' ? 'weather' : reportType === 'impact' ? 'impact' : 'operational';
+    const formatLabel = format === 'pdf' ? 'PDF' : format === 'csv' ? 'CSV' : 'Excel';
+    const templateName = selectedTemplate
+      ? templates.find((template) => template.id === selectedTemplate)?.name || 'the selected template'
+      : 'no template selected';
+    const templateCount = templates.length;
+
+    return `For ${stationName}, the report builder is set to generate a ${reportLabel} report in ${formatLabel} format from ${startDate} to ${endDate}. There are ${templateCount} templates available, and the current selection is ${templateName}. The report is useful for reviewing recent station conditions, documenting decisions, and sharing clear operational evidence with the wider team.`;
+  };
+
   const exportData = async (type: 'csv' | 'excel') => {
     if (!validateDates()) return;
 
@@ -221,6 +234,10 @@ if (start > end) {
             {activeStation.name} ({activeStation.code})
           </p>
         </div>
+        <VoiceGuideButton
+          label="Hear report details"
+          message={buildReportsNarration()}
+        />
       </div>
 
       <Tabs defaultValue="generate" className="space-y-4">

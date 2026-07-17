@@ -29,6 +29,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { VoiceGuideButton } from '@/components/ui/VoiceGuideButton';
 
 interface KPI {
   title: string;
@@ -134,6 +135,21 @@ export const AnalyticsPage: React.FC = () => {
   useEffect(() => {
     loadAnalytics();
   }, [activeStation, period]);
+
+  const buildAnalyticsNarration = () => {
+    const stationName = activeStation?.name || 'the selected station';
+    const topKpi = kpis[0];
+    const weatherSummary = weatherStats.reduce((best, item) => (item.average > best.average ? item : best), weatherStats[0] || { parameter: 'weather', average: 0 });
+    const latestMonth = monthlyData[monthlyData.length - 1];
+    const severeCount = impactStats?.bySeverity?.find((entry: any) => entry.severity === 'SEVERE')?.count || 0;
+    const criticalCount = impactStats?.bySeverity?.find((entry: any) => entry.severity === 'CRITICAL')?.count || 0;
+    const stationSummary = stationStats?.alertsGenerated ? `${stationStats.alertsGenerated} alerts have been generated for this station.` : 'No station summary data is available yet.';
+    const decisionSupport = severeCount > 0 || criticalCount > 0
+      ? `The current evidence suggests higher operational attention is needed because ${severeCount} severe and ${criticalCount} critical impact events are present.`
+      : 'The current evidence suggests routine monitoring is sufficient for now.';
+
+    return `For ${stationName}, the analytics dashboard shows ${topKpi?.title || 'key performance indicators'} at ${topKpi?.value || 'no current value'} with a ${topKpi?.change >= 0 ? 'positive' : 'negative'} trend. The strongest weather signal is ${weatherSummary.parameter} at an average of ${weatherSummary.average}. ${stationSummary} The latest reporting period recorded ${latestMonth?.impacts || 0} impacts and ${latestMonth?.alerts || 0} alerts. ${decisionSupport}`;
+  };
 
   const loadAnalytics = async () => {
     if (!activeStation) return;
@@ -270,6 +286,10 @@ export const AnalyticsPage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap gap-3">
+          <VoiceGuideButton
+            label="Hear analytics details"
+            message={buildAnalyticsNarration()}
+          />
 
           <Select
             value={period}

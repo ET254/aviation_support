@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAlertStore } from '@/stores/alertStore';
+import { useStationStore } from '@/stores/stationStore';
 import { api } from '@/services/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,9 +10,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AlertCircle, CheckCircle, Clock, RefreshCw, Loader2, Bell, BellOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { VoiceGuideButton } from '@/components/ui/VoiceGuideButton';
 
 export const AlertsPage: React.FC = () => {
   const { alerts, unreadCount, setAlerts, setUnreadCount, markRead, markAllRead, isLoading, setIsLoading } = useAlertStore();
+  const { activeStation } = useStationStore();
   const [activeTab, setActiveTab] = useState('all');
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [processingAll, setProcessingAll] = useState(false);
@@ -121,6 +124,23 @@ export const AlertsPage: React.FC = () => {
     return true;
   });
 
+  const buildAlertsNarration = () => {
+    const stationName = activeStation?.name || 'the selected station';
+    const unread = unreadCount;
+    const severityCounts = alerts.reduce((acc: Record<string, number>, alert: any) => {
+      acc[alert.severity] = (acc[alert.severity] || 0) + 1;
+      return acc;
+    }, {});
+    const topSeverity = Object.entries(severityCounts).sort((a, b) => b[1] - a[1])[0];
+    const latestAlert = alerts[0];
+    const latestMessage = latestAlert?.message || 'No alert message is currently available.';
+    const decisionSupport = unread > 0
+      ? `There are ${unread} unread alerts, so the recommended decision support is to review the unread items first and prioritize operational response for the most severe entries.`
+      : 'There are no unread alerts at the moment, so routine monitoring is appropriate.';
+
+    return `For ${stationName}, the alert view shows ${alerts.length} total alerts with ${unread} unread. The most common severity is ${topSeverity?.[0] || 'none'}. The latest alert says ${latestMessage}. ${decisionSupport}`;
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -131,6 +151,10 @@ export const AlertsPage: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-2">
+          <VoiceGuideButton
+            label="Hear alerts details"
+            message={buildAlertsNarration()}
+          />
           {unreadCount > 0 && (
             <Button variant="outline" onClick={handleMarkAllRead} disabled={processingAll}>
               {processingAll ? (

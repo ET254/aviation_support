@@ -189,10 +189,6 @@ async getStation(id: string) {
     return this.api.get('/weather/latest');
   }
 
-  async getReportTemplates() {
-    return this.api.get('/reports/templates');
-  }
-
   async getSIGMET(stationId: string) {
     return this.api.get(`/forecast/${stationId}/sigmet`);
   }

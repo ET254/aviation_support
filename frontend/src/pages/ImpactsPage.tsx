@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertCircle, CheckCircle, Clock, RefreshCw, Loader2, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { VoiceGuideButton } from '@/components/ui/VoiceGuideButton';
 
 export const ImpactsPage: React.FC = () => {
   const { activeStation } = useStationStore();
@@ -166,6 +167,25 @@ setStats(
     return colors[priority] || 'bg-gray-500';
   };
 
+  const buildImpactNarration = () => {
+    const stationName = activeStation?.name || 'the selected station';
+    const severity = impacts?.overallSeverity || 'unknown';
+    const summary = impacts?.summary || 'No detailed impact summary is available yet.';
+    const roleEntries = Object.entries(impacts?.roleImpacts || {});
+    const topRole = roleEntries[0];
+    const topAction = actions[0]?.action || 'No immediate action has been posted yet.';
+    const severeCount = stats?.bySeverity?.filter((entry: any) => ['SEVERE', 'CRITICAL'].includes(entry.severity)).reduce((total: number, entry: any) => total + entry.count, 0) || 0;
+    const recentLog = logs[0]?.description || 'No recent impact log is available.';
+    const roleNote = topRole
+      ? `The most relevant role impact is for ${topRole[0]}, which is currently ${topRole[1]?.severity || 'unclear'}.`
+      : 'There is no role-specific impact detail available yet.';
+    const decisionSupport = severeCount > 0
+      ? `Because ${severeCount} severe or critical impact entries are present, the recommended decision support is to prioritize safety actions, review the decision ladder, and follow the top recommended response immediately.`
+      : 'The current impact picture appears stable, so routine monitoring and continued review are appropriate.';
+
+    return `For ${stationName}, the impact assessment reports an overall severity of ${severity}. ${summary} ${roleNote} The latest operational log says ${recentLog}. The recommended next step is ${topAction}. ${decisionSupport}`;
+  };
+
   if (isLoading) {
   return (
     <div className="flex items-center justify-center h-64">
@@ -192,6 +212,10 @@ setStats(
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <VoiceGuideButton
+            label="Hear impact details"
+            message={buildImpactNarration()}
+          />
           <Select value={selectedRole} onValueChange={setSelectedRole}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Select role" />
